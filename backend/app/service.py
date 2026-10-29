@@ -39,7 +39,10 @@ def to_session_out(session: FuelingSession, now: datetime | None = None) -> Sess
         dispensed = _elapsed_liters(session, now)
     else:
         dispensed = session.dispensed_liters
-    total = round(dispensed * session.price_per_liter, 2)
+    if dispensed >= session.target_liters - 1e-9:
+        total = session.target_total
+    else:
+        total = round(dispensed * session.price_per_liter, 2)
     progress = 0.0 if session.target_liters == 0 else min(dispensed / session.target_liters, 1)
     return SessionOut(
         id=session.id,
